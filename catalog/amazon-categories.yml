@@ -1,0 +1,8 @@
+id: amazon-categories
+repo: DataHerb/dataset-amazon-categories
+tags:
+- e-commerce
+- reference
+owner:
+  team: DataHerb
+update_frequency: static

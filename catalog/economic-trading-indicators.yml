@@ -1,0 +1,9 @@
+id: economic-trading-indicators
+repo: DataHerb/dataset-ecomonic-trading-indicators-by-country
+tags:
+- economics
+- trade
+- time-series
+owner:
+  team: DataHerb
+update_frequency: monthly
