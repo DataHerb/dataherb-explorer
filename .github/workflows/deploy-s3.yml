@@ -1,0 +1,57 @@
+# Publishes the catalog to an S3 bucket (optionally behind CloudFront).
+# Enable by setting repository variables:
+#   DEPLOY_TARGET=s3, SITE_BUCKET=my-catalog-bucket, AWS_ROLE_ARN=arn:aws:iam::...:role/...,
+#   AWS_REGION=eu-central-1, CLOUDFRONT_DISTRIBUTION_ID (optional)
+name: Deploy to S3
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  repository_dispatch:
+    types: [dataset-updated]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: s3-site
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_TARGET == 's3'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ".[s3]"
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - id: mode
+        run: echo "mode=$(python -c "from dhx.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
+      - if: steps.mode.outputs.mode == 'vendored'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - if: steps.mode.outputs.mode == 'vendored'
+        run: npm ci && npm run vendor
+      - run: dhx build
+        env:
+          GITHUB_TOKEN: ${{ secrets.CATALOG_GITHUB_TOKEN || github.token }}
+      - name: Upload
+        run: |
+          # Data files change on every build; long-cache only the immutable vendor bundle.
+          aws s3 sync dist "s3://${{ vars.SITE_BUCKET }}" --delete --exclude "vendor/*" --cache-control "no-cache"
+          if [ -d dist/vendor ]; then
+            aws s3 sync dist/vendor "s3://${{ vars.SITE_BUCKET }}/vendor" --cache-control "public, max-age=31536000, immutable"
+          fi
+      - if: vars.CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/*"

@@ -1,0 +1,105 @@
+# DataHerb Explorer configuration.
+#
+# This is the one file a fork edits. Everything the site shows comes from the
+# sources declared here; `dhx build` reads them and writes a static site to
+# `dist/`. See docs/config.md for every option.
+
+site:
+  title: DataHerb Explorer
+  description: Internal open data catalog. Find, preview and explore datasets in the browser.
+  # Optional: an absolute URL or a path relative to site/ (e.g. assets/logo.svg).
+  logo: null
+  accent: "#2f7d4f"
+  # Links shown in the header.
+  links:
+    - label: How to add a dataset
+      url: https://github.com/DataHerb/dataherb-explorer/blob/main/docs/adding-datasets.md
+    - label: Job status spec
+      url: https://github.com/DataHerb/dataherb-explorer/blob/main/docs/job-status-spec.md
+  # Where the catalog is edited. Used for "Edit this entry" links.
+  repository: https://github.com/DataHerb/dataherb-explorer
+
+# Named storage locations. Catalog entries and status sources refer to them by name.
+stores:
+  # Git hosting. Metadata and data files are read through raw_url_template.
+  # For GitHub Enterprise use e.g. https://github.example.com/raw/{repo}/{ref}/{path}
+  github:
+    type: git
+    raw_url_template: https://raw.githubusercontent.com/{repo}/{ref}/{path}
+    web_url_template: https://github.com/{repo}
+    default_ref: HEAD
+    # Name of the env var holding a token for private repos (build time only).
+    token_env: GITHUB_TOKEN
+
+  # Files that live in this repository (copied into the site on build).
+  local:
+    type: local
+    path: demo
+
+  # An S3 (or S3-compatible) bucket. Uncomment and adapt.
+  # datalake:
+  #   type: s3
+  #   bucket: my-company-datalake
+  #   region: eu-central-1
+  #   # endpoint_url: https://minio.internal.example.com   # S3-compatible stores
+  #   # How browsers reach the objects. Usually a CloudFront distribution or a
+  #   # bucket restricted to the corporate network. Defaults to the virtual-hosted
+  #   # S3 URL https://{bucket}.s3.{region}.amazonaws.com
+  #   public_base_url: https://data.internal.example.com
+  #   # Sign URLs at build time instead (requires credentials in CI; max 7 days,
+  #   # so schedule rebuilds more often than presign_expiry_hours).
+  #   presign: false
+  #   presign_expiry_hours: 72
+
+# Where datasets come from.
+catalog:
+  # Folders of catalog entries (one YAML file per dataset, flora style).
+  dirs:
+    - catalog
+  # Auto-discovery: every <prefix>/**/dataherb.{json,yml,yaml} becomes a dataset.
+  discover: []
+  #  - store: datalake
+  #    prefix: datasets/
+
+# Crawler / job status monitoring. Jobs write status files following
+# docs/job-status-spec.md; the site reads them.
+status:
+  sources:
+    - store: local
+      prefix: status/
+  #  - store: datalake
+  #    prefix: _dataherb/status/
+  # Fetch latest.json files from the browser on page load, so status is live
+  # without rebuilding the site. Requires CORS on the bucket (docs/s3.md).
+  live: true
+  # A job is "stale" when the last success is older than
+  # expected_interval * (1 + stale_grace).
+  stale_grace: 0.5
+  # Number of past runs kept per job in the snapshot.
+  history: 30
+
+# In-browser exploration with DuckDB-WASM.
+explorer:
+  enabled: true
+  duckdb:
+    # "cdn" loads DuckDB-WASM from jsDelivr.
+    # "vendored" serves it from the site itself (npm run vendor); use this when
+    # browsers cannot reach public CDNs.
+    mode: cdn
+    version: 1.29.0
+  # Rows shown in previews and result tables.
+  preview_rows: 200
+  # Datasets larger than this (bytes) get a warning before loading in the browser.
+  max_browser_bytes: 500000000
+
+# Code snippets shown on each dataset page. {url} is the resource URL.
+snippets:
+  - label: Python (pandas)
+    language: python
+    template: |
+      import pandas as pd
+      df = pd.read_{format}("{url}")
+  - label: DuckDB
+    language: sql
+    template: |
+      SELECT * FROM '{url}' LIMIT 10;

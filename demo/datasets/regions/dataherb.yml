@@ -1,0 +1,24 @@
+spec: dataherb/v2
+id: demo-regions
+name: Sales regions
+description: Reference table of the sales regions used across the demo datasets, with country and population. Join it to sales on region_code.
+owner:
+  team: Data Platform
+  email: data-platform@example.com
+tags: [reference, geography, demo]
+domain: reference
+license: CC-BY-4.0
+classification: internal
+update_frequency: static
+datapackage:
+  resources:
+    - name: regions
+      path: regions.csv
+      format: csv
+      schema:
+        primaryKey: region_code
+        fields:
+          - { name: region_code, type: string, description: ISO 3166-2 style region code }
+          - { name: region_name, type: string, description: Display name }
+          - { name: country, type: string, description: ISO 3166-1 alpha-2 country code }
+          - { name: population, type: integer, description: Residents, latest census estimate }

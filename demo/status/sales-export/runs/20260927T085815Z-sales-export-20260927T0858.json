@@ -1,0 +1,48 @@
+{
+  "spec": "dataherb.status/v1",
+  "job": {
+    "id": "sales-export",
+    "name": "Nightly sales export",
+    "owner": "commercial-analytics@example.com",
+    "orchestrator": "airflow",
+    "schedule": "0 2 * * *",
+    "expected_interval": "P1D",
+    "max_duration": "PT2H",
+    "url": "https://airflow.example.com/dags/sales-export"
+  },
+  "run": {
+    "id": "sales-export-20260927T0858",
+    "status": "success",
+    "started_at": "2026-09-27T08:58:15Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/sales-export/grid",
+    "finished_at": "2026-09-27T09:21:37Z",
+    "duration_seconds": 1402.0
+  },
+  "last_success": {
+    "id": "sales-export-20260927T0858",
+    "status": "success",
+    "started_at": "2026-09-27T08:58:15Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/sales-export/grid",
+    "finished_at": "2026-09-27T09:21:37Z",
+    "duration_seconds": 1402.0
+  },
+  "datasets": [
+    {
+      "id": "demo-daily-sales",
+      "rows": 11680,
+      "data_updated_at": "2026-10-06T12:49:15.916654Z"
+    }
+  ],
+  "checks": [],
+  "metrics": {
+    "rows_written": 11596,
+    "source_files": 32
+  },
+  "producer": {
+    "name": "dataherb-explorer",
+    "version": "0.1.0"
+  },
+  "written_at": "2026-09-27T09:21:37Z"
+}

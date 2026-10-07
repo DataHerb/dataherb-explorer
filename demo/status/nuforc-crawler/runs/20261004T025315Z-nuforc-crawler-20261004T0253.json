@@ -1,0 +1,45 @@
+{
+  "spec": "dataherb.status/v1",
+  "job": {
+    "id": "nuforc-crawler",
+    "name": "NUFORC UFO report crawler",
+    "owner": "data-platform@example.com",
+    "orchestrator": "github-actions",
+    "schedule": "0 */6 * * *",
+    "expected_interval": "PT6H",
+    "url": "https://github.com/DataHerb/nuforc-ufo-records/actions"
+  },
+  "run": {
+    "id": "nuforc-crawler-20261004T0253",
+    "status": "success",
+    "started_at": "2026-10-04T02:53:15Z",
+    "trigger": "schedule",
+    "url": "https://github.com/DataHerb/dataherb-explorer/actions/runs/2026100402",
+    "finished_at": "2026-10-04T02:58:03Z",
+    "duration_seconds": 288.0
+  },
+  "last_success": {
+    "id": "nuforc-crawler-20261004T0253",
+    "status": "success",
+    "started_at": "2026-10-04T02:53:15Z",
+    "trigger": "schedule",
+    "url": "https://github.com/DataHerb/dataherb-explorer/actions/runs/2026100402",
+    "finished_at": "2026-10-04T02:58:03Z",
+    "duration_seconds": 288.0
+  },
+  "datasets": [
+    {
+      "id": "nuforc-ufo-records"
+    }
+  ],
+  "checks": [],
+  "metrics": {
+    "pages_crawled": 43,
+    "http_errors": 1
+  },
+  "producer": {
+    "name": "dataherb-explorer",
+    "version": "0.1.0"
+  },
+  "written_at": "2026-10-04T02:58:03Z"
+}

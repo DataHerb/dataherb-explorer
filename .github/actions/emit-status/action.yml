@@ -1,0 +1,85 @@
+name: DataHerb job status
+description: >
+  Write a DataHerb job status file (docs/job-status-spec.md) for this workflow
+  run, and optionally ask the catalog to rebuild.
+inputs:
+  target:
+    description: Where status files live, e.g. s3://my-bucket/_dataherb/status/ or a local folder.
+    required: true
+  job-id:
+    description: Stable job id. Defaults to <repository name>-<workflow name>.
+    required: false
+  job-name:
+    required: false
+  status:
+    description: "queued | running | success | partial | failed | skipped | cancelled. Also accepts GitHub's job.status (success, failure, cancelled)."
+    required: true
+  expected-interval:
+    description: ISO 8601 duration between successful runs, e.g. P1D or PT6H.
+    required: false
+  max-duration:
+    required: false
+  owner:
+    required: false
+  datasets:
+    description: Space-separated dataset ids this run refreshed (id or id:rows).
+    required: false
+  metrics:
+    description: Space-separated name=number pairs.
+    required: false
+  message:
+    required: false
+  dispatch-repository:
+    description: Catalog repo (owner/name) to send a dataset-updated event to after a successful run.
+    required: false
+  dispatch-token:
+    description: Token allowed to create repository_dispatch events on dispatch-repository.
+    required: false
+  dhx-version:
+    description: pip requirement for the dhx CLI.
+    default: "dataherb-explorer[s3] @ git+https://github.com/DataHerb/dataherb-explorer@main"
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: python3 -m pip install --quiet "${{ inputs.dhx-version }}"
+    - shell: bash
+      env:
+        IN_STATUS: ${{ inputs.status }}
+        IN_JOB_ID: ${{ inputs.job-id }}
+        IN_JOB_NAME: ${{ inputs.job-name }}
+        IN_DATASETS: ${{ inputs.datasets }}
+        IN_METRICS: ${{ inputs.metrics }}
+        IN_MESSAGE: ${{ inputs.message }}
+      run: |
+        set -euo pipefail
+        status="$IN_STATUS"
+        case "$status" in failure) status=failed ;; esac
+        job_id="${IN_JOB_ID:-${GITHUB_REPOSITORY#*/}-${GITHUB_WORKFLOW// /-}}"
+        args=(status emit --target "${{ inputs.target }}" --job-id "$job_id" --status "$status"
+              --orchestrator github-actions
+              --job-name "${IN_JOB_NAME:-$GITHUB_REPOSITORY / $GITHUB_WORKFLOW}"
+              --job-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/$(basename "${GITHUB_WORKFLOW_REF%@*}")"
+              --run-id "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" --attempt "$GITHUB_RUN_ATTEMPT"
+              --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")
+        case "$GITHUB_EVENT_NAME" in
+          schedule) args+=(--trigger schedule) ;;
+          workflow_dispatch) args+=(--trigger manual) ;;
+          *) args+=(--trigger event) ;;
+        esac
+        [ -n "${{ inputs.expected-interval }}" ] && args+=(--expected-interval "${{ inputs.expected-interval }}")
+        [ -n "${{ inputs.max-duration }}" ] && args+=(--max-duration "${{ inputs.max-duration }}")
+        [ -n "${{ inputs.owner }}" ] && args+=(--owner "${{ inputs.owner }}")
+        [ -n "$IN_MESSAGE" ] && args+=(--message "$IN_MESSAGE")
+        for d in $IN_DATASETS; do args+=(--dataset "$d"); done
+        for m in $IN_METRICS; do args+=(--metric "$m"); done
+        dhx "${args[@]}"
+    - if: inputs.dispatch-repository != '' && (inputs.status == 'success' || inputs.status == 'partial')
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.dispatch-token }}
+      run: |
+        gh api "repos/${{ inputs.dispatch-repository }}/dispatches" \
+          -f event_type=dataset-updated \
+          -f "client_payload[source]=$GITHUB_REPOSITORY" >/dev/null
+        echo "asked ${{ inputs.dispatch-repository }} to rebuild"

@@ -1,0 +1,78 @@
+# Rebuilds and publishes the catalog to GitHub Pages.
+#
+# Runs when the catalog or config changes, on a schedule (to pick up datasets
+# whose metadata changed in their own repos or buckets), and when a dataset
+# pipeline sends a `dataset-updated` repository_dispatch event.
+#
+# To publish to S3 instead, set the repository variable DEPLOY_TARGET=s3
+# (see deploy-s3.yml).
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  repository_dispatch:
+    types: [dataset-updated]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: vars.DEPLOY_TARGET != 's3'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ".[s3]"
+
+      # Optional: read private S3 stores at build time (OIDC, no long-lived keys).
+      - if: vars.AWS_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Refresh demo job status
+        if: hashFiles('scripts/make_demo_status.py') != ''
+        run: python scripts/make_demo_status.py
+
+      - name: Vendor DuckDB-WASM (only when explorer.duckdb.mode is vendored)
+        id: mode
+        run: echo "mode=$(python -c "from dhx.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
+      - if: steps.mode.outputs.mode == 'vendored'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - if: steps.mode.outputs.mode == 'vendored'
+        run: npm ci && npm run vendor
+
+      - name: Build
+        run: dhx build
+        env:
+          GITHUB_TOKEN: ${{ secrets.CATALOG_GITHUB_TOKEN || github.token }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DataHerb Explorer</title>
+    <meta name="description" content="Internal open data catalog and explorer" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="brand" href="#/"><img id="logo" alt="" hidden /><span id="site-title">DataHerb Explorer</span></a>
+        <nav class="nav" aria-label="Main">
+          <a href="#/" data-nav="catalog">Catalog</a>
+          <a href="#/explore" data-nav="explore">Explore</a>
+          <a href="#/status" data-nav="status">Status <span id="status-badge" class="nav-badge" hidden></span></a>
+        </nav>
+        <nav class="nav nav-ext" id="ext-links" aria-label="Links"></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"><p class="loading">Loading catalog…</p></main>
+    <footer class="footer">
+      <span id="footer-build"></span>
+      <span>Built with <a href="https://github.com/DataHerb/dataherb-explorer">DataHerb Explorer</a></span>
+    </footer>
+    <noscript>This catalog needs JavaScript.</noscript>
+    <script type="module" src="assets/app.js"></script>
+  </body>
+</html>

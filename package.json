@@ -1,0 +1,13 @@
+{
+  "name": "dataherb-explorer-site",
+  "private": true,
+  "description": "Optional: vendor DuckDB-WASM into site/vendor for networks without CDN access.",
+  "type": "module",
+  "scripts": {
+    "vendor": "node scripts/vendor-duckdb.mjs"
+  },
+  "devDependencies": {
+    "@duckdb/duckdb-wasm": "1.29.0",
+    "esbuild": "^0.25.0"
+  }
+}

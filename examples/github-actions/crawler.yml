@@ -1,0 +1,53 @@
+# Example: a crawler workflow in a dataset repository that reports its status
+# to the catalog. Copy into .github/workflows/ of the dataset repo.
+name: Crawl
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write   # for AWS OIDC
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: eu-central-1
+
+      - name: Report start
+        uses: DataHerb/dataherb-explorer/.github/actions/emit-status@main
+        with:
+          target: s3://my-company-datalake/_dataherb/status/
+          job-id: ufo-crawler
+          status: running
+          expected-interval: PT6H
+          max-duration: PT1H
+          owner: data-platform@example.com
+
+      - name: Crawl
+        id: crawl
+        run: |
+          python crawl.py --out dataset/
+          echo "rows=$(($(wc -l < dataset/records.csv) - 1))" >> "$GITHUB_OUTPUT"
+
+      - name: Upload data
+        run: aws s3 sync dataset/ s3://my-company-datalake/datasets/ufo/
+
+      - name: Report result
+        if: always()
+        uses: DataHerb/dataherb-explorer/.github/actions/emit-status@main
+        with:
+          target: s3://my-company-datalake/_dataherb/status/
+          job-id: ufo-crawler
+          status: ${{ job.status }}
+          datasets: ufo-records:${{ steps.crawl.outputs.rows }}
+          # Rebuild the catalog so new files and schemas show up right away.
+          dispatch-repository: my-org/data-catalog
+          dispatch-token: ${{ secrets.CATALOG_DISPATCH_TOKEN }}
