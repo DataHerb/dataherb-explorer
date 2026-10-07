@@ -12,4 +12,4 @@ package = false
 
 [tool.uv.sources]
 # Until a release with `dataherb catalog` is on PyPI.
-dataherb = { git = "https://github.com/DataHerb/dataherb-python", branch = "master" }
+dataherb = { git = "https://github.com/DataHerb/dataherb-python", branch = "claude/add-dataset-repos-ghxvls" }  # back to master once dataherb-python#27 is merged

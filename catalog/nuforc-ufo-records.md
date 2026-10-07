@@ -1,3 +1,4 @@
+---
 # A dataset in its own git repository. Metadata (dataherb.json) is read from the
 # repo at build time; anything set here overrides it.
 id: nuforc-ufo-records
@@ -7,3 +8,4 @@ owner: { team: DataHerb }
 license: Data from nuforc.org; for research use
 update_frequency: monthly
 status_job: nuforc-crawler
+---

@@ -1,9 +1,10 @@
+---
 id: airpassenger
 repo: DataHerb/dataset-airpassenger
 inline: true
 name: Air passengers (1949-1960)
-description: 'Monthly totals of international airline passengers from 1949 to 1960,
-  the classic Box and Jenkins time series. Source: https://www.kaggle.com/datasets/rakannimer/air-passengers'
+description: Monthly totals of international airline passengers from 1949 to 1960,
+  the classic Box and Jenkins time series.
 tags:
 - transport
 - time-series
@@ -26,3 +27,14 @@ datapackage:
       - name: '#Passengers'
         type: integer
         description: Passengers (thousands)
+---
+
+## Source
+
+[Air Passengers on Kaggle](https://www.kaggle.com/datasets/rakannimer/air-passengers), originally from
+Box, Jenkins and Reinsel, *Time Series Analysis: Forecasting and Control*.
+
+## Notes
+
+- Passenger counts are in thousands.
+- A common benchmark for seasonal forecasting: strong trend plus multiplicative yearly seasonality.

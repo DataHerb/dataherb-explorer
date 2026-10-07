@@ -4,7 +4,7 @@
                  build time (CI, hourly + on change)                     read time (browser)
  ┌──────────────────────────┐
  │ dataherb.config.yml      │
- │ catalog/*.yml            │──┐
+ │ catalog/*.md             │──┐
  └──────────────────────────┘  │   ┌────────────┐   dist/            ┌─────────────────────────┐
  ┌──────────────────────────┐  ├──▶│ dataherb catalog build  │──▶ index.html ────▶│ catalog / dataset pages │
  │ git repos: dataherb.json │──┤   │  resolve   │    assets/         │ explorer (DuckDB-WASM)  │──▶ data files

@@ -1,9 +1,11 @@
+---
 id: entso-e-power-consumption
 repo: DataHerb/dataset-ENTSO-E-power-comsumption
 inline: true
 name: ENTSO-E power consumption by country
 description: Actual total electricity load per country from the ENTSO-E Transparency
-  Platform, 2015 to August 2020 at 15-minute or hourly resolution, one CSV per country (ISO 3166 alpha-2 codes).
+  Platform, 2015 to August 2020 at 15-minute or hourly resolution, one CSV per country
+  (ISO 3166 alpha-2 codes).
 tags:
 - energy
 - time-series
@@ -266,3 +268,28 @@ datapackage:
       - name: load
         type: number
         description: Actual total load (MW)
+---
+
+## Source
+
+[ENTSO-E Transparency Platform](https://transparency.entsoe.eu/), "Actual Total Load" per bidding zone.
+
+## Files
+
+One CSV per country, named by ISO 3166 alpha-2 code:
+
+| File | Country | File | Country |
+| --- | --- | --- | --- |
+| `at.csv` | Austria | `gb.csv` | Great Britain |
+| `be.csv` | Belgium | `ie.csv` | Ireland |
+| `ch.csv` | Switzerland | `it.csv` | Italy |
+| `de.csv` | Germany | `lu.csv` | Luxembourg |
+| `dk.csv` | Denmark | `nl.csv` | Netherlands |
+| `es.csv` | Spain | `no.csv` | Norway |
+| `fr.csv` | France | `pt.csv` | Portugal |
+| | | `se.csv` | Sweden |
+
+## Notes
+
+- Resolution differs by country: 15 minutes for some (e.g. DE, NL, AT, BE, LU), hourly for others.
+- Timestamps are UTC.
