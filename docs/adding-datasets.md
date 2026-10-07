@@ -75,6 +75,16 @@ store: datalake            # git: use `repo: my-org/orders-daily` (+ optional `r
 prefix: datasets/orders-daily/
 ```
 
+For git repositories, `dataherb catalog add` writes these files for you. A
+repo with metadata gets a pointer entry; one without gets an inline entry
+inferred from its data files:
+
+```bash
+dataherb catalog add my-org/orders-daily
+# every repo of an org whose name starts with "dataset" (ids drop the prefix)
+dataherb catalog add --org my-org --match dataset
+```
+
 Anything else you put in the entry overrides the dataset's own metadata, which
 is handy for adding tags or an owner to a dataset you don't control. An entry
 can also hold the whole metadata itself with `inline: true`.
