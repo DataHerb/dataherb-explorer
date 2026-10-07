@@ -6,14 +6,14 @@
  │ dataherb.config.yml      │
  │ catalog/*.yml            │──┐
  └──────────────────────────┘  │   ┌────────────┐   dist/            ┌─────────────────────────┐
- ┌──────────────────────────┐  ├──▶│ dhx build  │──▶ index.html ────▶│ catalog / dataset pages │
+ ┌──────────────────────────┐  ├──▶│ dataherb catalog build  │──▶ index.html ────▶│ catalog / dataset pages │
  │ git repos: dataherb.json │──┤   │  resolve   │    assets/         │ explorer (DuckDB-WASM)  │──▶ data files
  │ S3 prefixes: dataherb.yml│──┤   │  validate  │    data/*.json     │ status page             │──▶ latest.json (live)
  │ status/<job>/latest.json │──┘   │  lint      │    files/ (local)  └─────────────────────────┘     (S3 / git / site)
  └──────────────────────────┘      └────────────┘
 ```
 
-**Build** (`dhx build`, Python, stdlib + PyYAML + jsonschema; boto3 for S3):
+**Build** (`dataherb catalog build`, Python, stdlib + PyYAML + jsonschema; boto3 for S3):
 
 1. Load the config and every catalog entry; validate them against the schemas.
 2. Discover `dataherb.{json,yml}` files under configured prefixes.
@@ -62,8 +62,8 @@ error in the build report, so one broken repo never breaks the site.
 | v1 | v2 |
 |---|---|
 | `dataherb-flora` (YAML listing per dataset) | `catalog/` folder, same idea, plus S3/HTTP/local sources and discovery |
-| `dataherb-metadata-aggregator` | `dhx build` (aggregation, validation, linting) |
+| `dataherb-metadata-aggregator` | `dataherb catalog build` (aggregation, validation, linting) |
 | `dataherb.github.io` (Jekyll) | `site/`: static SPA with preview, explorer and status |
-| `dataherb` CLI `create` / `upload` | `dhx new` (schema inference); upload with git or `aws s3 sync` |
+| `dataherb` CLI `create` / `upload` | `dataherb create` now infers the schema; `dataherb catalog` and `dataherb status` added; upload with git or `aws s3 sync` |
 | `dataherb.json` (`source: git | s3`, `datapackage`) | read as is; v2 adds owner, tags, license, classification, update frequency, status job, related datasets |
 | `.dataherb/metadata.yml` | still read |

@@ -1,0 +1,51 @@
+{
+  "spec": "dataherb.status/v1",
+  "job": {
+    "id": "warehouse-sync",
+    "name": "Warehouse to S3 sync",
+    "owner": "data-platform@example.com",
+    "orchestrator": "airflow",
+    "schedule": "@hourly",
+    "expected_interval": "PT3H",
+    "max_duration": "PT30M"
+  },
+  "run": {
+    "id": "warehouse-sync-20261007T0903",
+    "status": "partial",
+    "started_at": "2026-10-07T09:03:23Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/warehouse-sync/grid",
+    "finished_at": "2026-10-07T09:05:02Z",
+    "duration_seconds": 99.0
+  },
+  "last_success": {
+    "id": "warehouse-sync-20261007T0805",
+    "status": "success",
+    "started_at": "2026-10-07T08:05:23Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/warehouse-sync/grid",
+    "finished_at": "2026-10-07T08:07:48Z",
+    "duration_seconds": 145.0
+  },
+  "datasets": [],
+  "checks": [
+    {
+      "name": "freshness_orders",
+      "status": "pass"
+    },
+    {
+      "name": "schema_drift_customers",
+      "status": "fail",
+      "message": "column 'segment' disappeared"
+    }
+  ],
+  "metrics": {
+    "tables_synced": 41,
+    "tables_failed": 1
+  },
+  "producer": {
+    "name": "dataherb",
+    "version": "0.1.10"
+  },
+  "written_at": "2026-10-07T09:05:02Z"
+}

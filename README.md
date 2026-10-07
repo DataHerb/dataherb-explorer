@@ -7,7 +7,7 @@ buckets, and get:
 - **A searchable catalog** with facets (tags, domain, owner, freshness, storage, format), schemas, documentation and copy-paste snippets.
 - **Job status monitoring**: every pipeline (Airflow, GitHub Actions, cron) writes a small JSON status file; the site shows what is failing, stuck or stale, live, without a backend. See the [status file spec](docs/job-status-spec.md).
 - **In-browser exploration** with DuckDB-WASM: preview and profile any CSV, Parquet or JSON file, write SQL across datasets, build joins with a helper, draw bar, line, scatter and histogram charts, and get summary statistics and correlations. Shareable links capture the query.
-- **Catalog tooling**: `dhx new` drafts metadata from data files, `dhx validate` checks entries in CI, `dhx lint` scores metadata quality, `dhx status check` alerts on unhealthy jobs.
+- **Catalog tooling**: `dataherb create` drafts metadata from data files, `dataherb catalog validate` checks entries in CI, `dataherb catalog lint` scores metadata quality, `dataherb status check` alerts on unhealthy jobs.
 
 No server, no database. A scheduled GitHub Actions job rebuilds the site; data
 is served straight from S3, git or the site itself. This is v2 of
@@ -23,9 +23,9 @@ is served straight from S3, git or the site itself. This is v2 of
 
 ```bash
 git clone https://github.com/DataHerb/dataherb-explorer && cd dataherb-explorer
-pip install -e .
-dhx build        # reads dataherb.config.yml + catalog/, writes dist/
-dhx serve        # http://127.0.0.1:8000
+pip install -r requirements.txt   # the dataherb CLI
+dataherb catalog build        # reads dataherb.config.yml + catalog/, writes dist/
+dataherb catalog serve        # http://127.0.0.1:8000
 ```
 
 The demo catalog mixes datasets in this repo (`demo/`), datasets in other
@@ -56,8 +56,6 @@ set `DEPLOY_TARGET=s3` (see [deploy-s3.yml](.github/workflows/deploy-s3.yml)).
 dataherb.config.yml     the one config file
 catalog/                one YAML entry per dataset
 demo/                   demo datasets and status files (delete in a fork)
-dhx/                    the builder and CLI (Python)
-  schemas/              JSON Schemas: config, catalog entry, dataset metadata, job status
 site/                   the static site (vanilla JS, no build step)
 .github/workflows/      CI, Pages and S3 deploys
 .github/actions/emit-status/   GitHub Action that writes status files
@@ -67,21 +65,22 @@ docs/                   config, adding datasets, status spec, S3, architecture
 
 ## CLI
 
+The builder is the `dataherb` CLI from [dataherb-python](https://github.com/DataHerb/dataherb-python); the JSON Schemas live in its `dataherb/catalog/schemas/`.
+
 | Command | |
 |---|---|
-| `dhx build [-o dist] [--strict]` | Build the site. `--strict` fails on unreachable datasets. |
-| `dhx validate` | Validate the config and catalog entries against the schemas. |
-| `dhx lint [--min-score N]` | Metadata quality report per dataset. |
-| `dhx new [folder]` | Draft `dataherb.yml` from the data files in a folder. |
-| `dhx status emit --target s3://... --job-id X --status running/success/failed ...` | Write a job status file. |
-| `dhx status check` | Print job health; exit 1 if any job is failing, stuck or stale. |
-| `dhx serve [dist]` | Serve a built site locally. |
+| `dataherb catalog build [-o dist] [--strict]` | Build the site. `--strict` fails on unreachable datasets. |
+| `dataherb catalog validate` | Validate the config and catalog entries against the schemas. |
+| `dataherb catalog lint [--min-score N]` | Metadata quality report per dataset. |
+| `dataherb create [folder] --format yaml` | Draft `dataherb.yml` from the data files in a folder. |
+| `dataherb status emit --target s3://... --job-id X --status running/success/failed ...` | Write a job status file. |
+| `dataherb status check` | Print job health; exit 1 if any job is failing, stuck or stale. |
+| `dataherb catalog serve [dist]` | Serve a built site locally. |
 
 ## Development
 
 ```bash
-pip install -e ".[dev,s3,infer]"
-pytest
+pip install -r requirements.txt
 npm ci && npm run vendor     # optional: self-host DuckDB-WASM in site/vendor
 ```
 

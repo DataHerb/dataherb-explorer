@@ -14,7 +14,7 @@ The design goals:
 - **One write per run is enough.** Writing at start (`running`) and at the end
   makes "stuck" detection possible, but is optional.
 
-JSON Schema: [`dhx/schemas/job-status.schema.json`](../dhx/schemas/job-status.schema.json).
+JSON Schema: [`dataherb/catalog/schemas/job-status.schema.json`](https://github.com/DataHerb/dataherb-python/blob/master/dataherb/catalog/schemas/job-status.schema.json).
 
 ## Layout
 
@@ -26,8 +26,8 @@ named after its id:
 <prefix>/<job_id>/runs/<YYYYMMDDTHHMMSSZ>-<run_id>.json   one file per run (history)
 ```
 
-- `latest.json` is what the site and `dhx status check` read. It must be
-  served with `Cache-Control: no-cache` (writers using `dhx` do this).
+- `latest.json` is what the site and `dataherb status check` read. It must be
+  served with `Cache-Control: no-cache` (`dataherb status emit` does this).
 - `runs/` files are named with the run's start time first, so a lexical sort
   is a time sort. The builder reads the newest `status.history` of them for
   the run strip. A store that cannot list (git, plain HTTP) only shows `latest.json`.
@@ -98,7 +98,7 @@ writers should use UTC with a `Z` suffix.
 A copy of the most recent run with `status: success`. **Writers carry it
 forward**: when the current run is not a success, `last_success` keeps the
 previous value. This is what lets a reader know a job is stale even when its
-latest run failed, without reading the history. `dhx status emit` does this
+latest run failed, without reading the history. `dataherb status emit` does this
 for you; hand-written emitters should read the previous `latest.json` first.
 
 ### `datasets`, `checks`, `metrics`
@@ -133,7 +133,7 @@ time. Rules are applied in order; the first that matches wins.
 last success. Severity order (worst first): failing, stuck, stale, degraded,
 running, healthy, unknown. A dataset shows the worst health of its jobs.
 
-The rules are implemented twice and kept in sync: `dhx/status.py` (`assess`)
+The rules are implemented twice and kept in sync: `dataherb.catalog.status.assess` in [dataherb-python](https://github.com/DataHerb/dataherb-python)
 and `site/assets/lib/health.js`.
 
 ## Writing status files
@@ -141,17 +141,17 @@ and `site/assets/lib/health.js`.
 **Python / any orchestrator with Python**
 
 ```bash
-pip install "dataherb-explorer[s3]"
-dhx status emit --target s3://bucket/_dataherb/status/ \
+pip install "dataherb[s3]"
+dataherb status emit --target s3://bucket/_dataherb/status/ \
   --job-id sales-export --status running --expected-interval P1D --max-duration PT2H
 # ... do the work ...
-dhx status emit --target s3://bucket/_dataherb/status/ \
+dataherb status emit --target s3://bucket/_dataherb/status/ \
   --job-id sales-export --status success --dataset demo-daily-sales:11680 --metric rows_written=11680
 ```
 
 The second call finds the `running` run in `latest.json` and completes it
 (same run id, start time kept, duration computed). From Python:
-`dhx.status.emit(store, prefix, job, run, datasets, checks, metrics)`.
+`dataherb.catalog.status.emit(store, prefix, job, run, datasets, checks, metrics)`.
 
 **Airflow**: DAG callbacks in [`examples/airflow/dataherb_status.py`](../examples/airflow/dataherb_status.py).
 
@@ -165,6 +165,6 @@ writes a minimal file with the AWS CLI.
 
 ## Alerting
 
-`dhx status check` prints every job's health and exits with code 1 when any
+`dataherb status check` prints every job's health and exits with code 1 when any
 job is failing, stuck or stale (`--fail-on` changes the set). Run it on a
 schedule in CI to get a red build, or pipe it to your chat tool.

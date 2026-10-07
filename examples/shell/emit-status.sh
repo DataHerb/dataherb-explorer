@@ -2,7 +2,7 @@
 # Write a DataHerb status file without Python: build the JSON and copy it to S3.
 # Usage: emit-status.sh <job_id> <status> [message]
 # This minimal version does not carry `last_success` forward; prefer
-# `dhx status emit` when you can, or keep last_success yourself.
+# `dataherb status emit` when you can, or keep last_success yourself.
 set -euo pipefail
 JOB_ID="$1"; STATUS="$2"; MESSAGE="${3:-}"
 TARGET="${DATAHERB_STATUS_TARGET:-s3://my-company-datalake/_dataherb/status}"

@@ -1,8 +1,8 @@
 # Configuration (`dataherb.config.yml`)
 
-One YAML file drives the whole site. `dhx validate` checks it against
-[`dhx/schemas/config.schema.json`](../dhx/schemas/config.schema.json).
-Anything left out falls back to the defaults in `dhx/config.py`.
+One YAML file drives the whole site. `dataherb catalog validate` checks it against
+[`dataherb/catalog/schemas/config.schema.json`](https://github.com/DataHerb/dataherb-python/blob/master/dataherb/catalog/schemas/config.schema.json).
+Anything left out falls back to the defaults in [`dataherb/catalog/config.py`](https://github.com/DataHerb/dataherb-python/blob/master/dataherb/catalog/config.py).
 
 Only a safe subset reaches the browser (`dist/data/config.json`): site
 settings, store types and public base URLs, status and explorer options, and
@@ -21,7 +21,7 @@ variable names stay on the build machine.
 | `repository` | none | Repo holding the catalog; enables "Edit catalog entry" links (`<repository>/blob/main/<file>`) |
 
 Deeper theming: edit the CSS custom properties at the top of
-`site/assets/style.css`, or pass a different site folder with `dhx build --site`.
+`site/assets/style.css`, or pass a different site folder with `dataherb catalog build --site`.
 
 ## `stores`
 

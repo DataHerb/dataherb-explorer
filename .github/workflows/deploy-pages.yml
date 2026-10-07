@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ".[s3]"
+      - run: pip install -r requirements.txt
 
       # Optional: read private S3 stores at build time (OIDC, no long-lived keys).
       - if: vars.AWS_ROLE_ARN != ''
@@ -50,7 +50,7 @@ jobs:
 
       - name: Vendor DuckDB-WASM (only when explorer.duckdb.mode is vendored)
         id: mode
-        run: echo "mode=$(python -c "from dhx.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
+        run: echo "mode=$(python -c "from dataherb.catalog.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
       - if: steps.mode.outputs.mode == 'vendored'
         uses: actions/setup-node@v4
         with:
@@ -59,7 +59,7 @@ jobs:
         run: npm ci && npm run vendor
 
       - name: Build
-        run: dhx build
+        run: dataherb catalog build
         env:
           GITHUB_TOKEN: ${{ secrets.CATALOG_GITHUB_TOKEN || github.token }}
       - uses: actions/configure-pages@v5

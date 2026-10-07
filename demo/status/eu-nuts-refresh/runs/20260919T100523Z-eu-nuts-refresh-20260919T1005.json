@@ -1,0 +1,41 @@
+{
+  "spec": "dataherb.status/v1",
+  "job": {
+    "id": "eu-nuts-refresh",
+    "name": "Eurostat NUTS refresh",
+    "owner": "geo@example.com",
+    "orchestrator": "github-actions",
+    "expected_interval": "P7D",
+    "max_duration": "PT1H"
+  },
+  "run": {
+    "id": "eu-nuts-refresh-20260919T1005",
+    "status": "success",
+    "started_at": "2026-09-19T10:05:23Z",
+    "trigger": "schedule",
+    "url": "https://github.com/DataHerb/dataherb-explorer/actions/runs/2026091910",
+    "finished_at": "2026-09-19T10:13:35Z",
+    "duration_seconds": 492.0
+  },
+  "last_success": {
+    "id": "eu-nuts-refresh-20260919T1005",
+    "status": "success",
+    "started_at": "2026-09-19T10:05:23Z",
+    "trigger": "schedule",
+    "url": "https://github.com/DataHerb/dataherb-explorer/actions/runs/2026091910",
+    "finished_at": "2026-09-19T10:13:35Z",
+    "duration_seconds": 492.0
+  },
+  "datasets": [
+    {
+      "id": "eu-nuts"
+    }
+  ],
+  "checks": [],
+  "metrics": {},
+  "producer": {
+    "name": "dataherb",
+    "version": "0.1.10"
+  },
+  "written_at": "2026-09-19T10:13:35Z"
+}

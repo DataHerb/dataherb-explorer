@@ -9,8 +9,8 @@ prefix, a folder on a web server, or a folder in this repository.
 In the folder that holds the files:
 
 ```bash
-pip install "dataherb-explorer[infer]"   # duckdb gives exact types and row counts for CSV, Parquet, JSON
-dhx new . --id orders-daily --name "Daily orders"
+pip install "dataherb[infer]"   # duckdb gives exact types and row counts for CSV, Parquet, JSON
+dataherb create . --id orders-daily --name "Daily orders" --format yaml --no-input
 ```
 
 This writes `dataherb.yml` with one resource per data file, the columns and
@@ -47,7 +47,7 @@ datapackage:
           - { name: amount_eur, type: number, unit: EUR, description: Net amount }
 ```
 
-The full schema is [`dhx/schemas/dataset.schema.json`](../dhx/schemas/dataset.schema.json).
+The full schema is [`dataherb/catalog/schemas/dataset.schema.json`](https://github.com/DataHerb/dataherb-python/blob/master/dataherb/catalog/schemas/dataset.schema.json).
 `datapackage` follows [Frictionless Data Package](https://specs.frictionlessdata.io/data-package/),
 so `dataherb.json` files written by the v1 `dataherb` CLI keep working, and so
 does the original `.dataherb/metadata.yml` format.
@@ -81,7 +81,7 @@ can also hold the whole metadata itself with `inline: true`.
 With `catalog.discover` configured for a prefix, step 3 is unnecessary: every
 `dataherb.{json,yml}` under it is picked up on the next build.
 
-CI runs `dhx validate` and `dhx lint` on the pull request. After merge the
+CI runs `dataherb catalog validate` and `dataherb catalog lint` on the pull request. After merge the
 site rebuilds. Datasets in other repos or buckets are re-read on the hourly
 scheduled build, or immediately when their pipeline sends a
 `dataset-updated` event (see the emit-status action).
@@ -90,5 +90,5 @@ scheduled build, or immediately when their pipeline sends a
 
 Every dataset gets a 0 to 100 score shown as **Q** on the catalog. It rewards
 a real description, an owner, declared and documented columns, tags, a
-license, an update frequency and a linked status job. `dhx lint` prints what
-is missing for each dataset; `dhx lint --min-score 60` fails CI below a bar.
+license, an update frequency and a linked status job. `dataherb catalog lint` prints what
+is missing for each dataset; `dataherb catalog lint --min-score 60` fails CI below a bar.

@@ -1,0 +1,41 @@
+{
+  "spec": "dataherb.status/v1",
+  "job": {
+    "id": "warehouse-sync",
+    "name": "Warehouse to S3 sync",
+    "owner": "data-platform@example.com",
+    "orchestrator": "airflow",
+    "schedule": "@hourly",
+    "expected_interval": "PT3H",
+    "max_duration": "PT30M"
+  },
+  "run": {
+    "id": "warehouse-sync-20261006T1201",
+    "status": "success",
+    "started_at": "2026-10-06T12:01:23Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/warehouse-sync/grid",
+    "finished_at": "2026-10-06T12:03:31Z",
+    "duration_seconds": 128.0
+  },
+  "last_success": {
+    "id": "warehouse-sync-20261006T1201",
+    "status": "success",
+    "started_at": "2026-10-06T12:01:23Z",
+    "trigger": "schedule",
+    "url": "https://airflow.example.com/dags/warehouse-sync/grid",
+    "finished_at": "2026-10-06T12:03:31Z",
+    "duration_seconds": 128.0
+  },
+  "datasets": [],
+  "checks": [],
+  "metrics": {
+    "tables_synced": 41,
+    "tables_failed": 1
+  },
+  "producer": {
+    "name": "dataherb",
+    "version": "0.1.10"
+  },
+  "written_at": "2026-10-06T12:03:31Z"
+}

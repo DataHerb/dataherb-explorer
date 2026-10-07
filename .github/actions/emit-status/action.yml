@@ -35,14 +35,14 @@ inputs:
   dispatch-token:
     description: Token allowed to create repository_dispatch events on dispatch-repository.
     required: false
-  dhx-version:
-    description: pip requirement for the dhx CLI.
-    default: "dataherb-explorer[s3] @ git+https://github.com/DataHerb/dataherb-explorer@main"
+  dataherb-version:
+    description: pip requirement for the dataherb CLI.
+    default: "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@catalog-v2"
 runs:
   using: composite
   steps:
     - shell: bash
-      run: python3 -m pip install --quiet "${{ inputs.dhx-version }}"
+      run: python3 -m pip install --quiet "${{ inputs.dataherb-version }}"
     - shell: bash
       env:
         IN_STATUS: ${{ inputs.status }}
@@ -73,7 +73,7 @@ runs:
         [ -n "$IN_MESSAGE" ] && args+=(--message "$IN_MESSAGE")
         for d in $IN_DATASETS; do args+=(--dataset "$d"); done
         for m in $IN_METRICS; do args+=(--metric "$m"); done
-        dhx "${args[@]}"
+        dataherb "${args[@]}"
     - if: inputs.dispatch-repository != '' && (inputs.status == 'success' || inputs.status == 'partial')
       shell: bash
       env:

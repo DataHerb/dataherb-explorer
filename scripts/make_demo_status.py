@@ -13,9 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from dhx.status import emit  # noqa: E402
-from dhx.stores import LocalStore  # noqa: E402
-from dhx.util import iso, utcnow  # noqa: E402
+from dataherb.catalog.status import emit  # noqa: E402
+from dataherb.catalog.stores import LocalStore  # noqa: E402
+from dataherb.catalog.util import iso, utcnow  # noqa: E402
 
 OUT = ROOT / "demo" / "status"
 

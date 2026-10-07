@@ -1,4 +1,4 @@
-// Job health, mirrored from dhx/status.py `assess`. Keep the two in sync.
+// Job health, mirrored from dataherb.catalog.status.assess (dataherb-python). Keep the two in sync.
 
 export const HEALTH_ORDER = ['failing', 'stuck', 'stale', 'degraded', 'running', 'healthy', 'unknown'];
 

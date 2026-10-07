@@ -1,0 +1,3 @@
+# The dataherb CLI builds this site (`dataherb catalog build`).
+# Points at the catalog-v2 branch until DataHerb/dataherb-python#26 is released.
+dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@catalog-v2

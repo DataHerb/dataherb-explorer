@@ -18,7 +18,7 @@ callbacks to any DAG:
     ) as dag:
         ...
 
-Requires `pip install "dataherb-explorer[s3]"` on the workers. The worker's
+Requires `pip install "dataherb[s3]"` on the workers. The worker's
 AWS credentials (instance role, connection env vars) are used to write.
 Status writes never fail the DAG: errors are logged and swallowed.
 """
@@ -28,7 +28,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from dhx.status import emit, store_for_target
+from dataherb.catalog.status import emit, store_for_target
 
 log = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-// Loads the JSON files written by `dhx build`, and refreshes job status live.
+// Loads the JSON files written by `dataherb catalog build`, and refreshes job status live.
 
 import { assess, HEALTH_ORDER, worst } from './health.js';
 

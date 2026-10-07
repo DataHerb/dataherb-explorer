@@ -1,7 +1,7 @@
 # DataHerb Explorer configuration.
 #
 # This is the one file a fork edits. Everything the site shows comes from the
-# sources declared here; `dhx build` reads them and writes a static site to
+# sources declared here; `dataherb catalog build` reads them and writes a static site to
 # `dist/`. See docs/config.md for every option.
 
 site:

@@ -10,7 +10,7 @@ import { statusView } from './views/status.js';
 const main = document.getElementById('main');
 let cleanup = null;
 
-const THEME_KEY = 'dhx-theme';
+const THEME_KEY = 'dataherb-theme';
 
 function initTheme() {
   let saved = null;
@@ -85,7 +85,7 @@ async function start() {
   } catch (e) {
     mount(
       main,
-      h('div.panel.error', h('h2', 'Could not load the catalog'), h('p', String(e.message || e)), h('p.muted', 'Run `dhx build` and serve the dist/ folder.')),
+      h('div.panel.error', h('h2', 'Could not load the catalog'), h('p', String(e.message || e)), h('p.muted', 'Run `dataherb catalog build` and serve the dist/ folder.')),
     );
     return;
   }
