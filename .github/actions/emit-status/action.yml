@@ -37,7 +37,7 @@ inputs:
     required: false
   dataherb-version:
     description: pip requirement for the dataherb CLI.
-    default: "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@catalog-v2"
+    default: "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@master"
 runs:
   using: composite
   steps:
