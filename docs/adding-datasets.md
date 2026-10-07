@@ -9,7 +9,8 @@ prefix, a folder on a web server, or a folder in this repository.
 In the folder that holds the files:
 
 ```bash
-pip install "dataherb[infer]"   # duckdb gives exact types and row counts for CSV, Parquet, JSON
+# [infer] adds duckdb for exact types and row counts of CSV, Parquet, JSON
+uv tool install "dataherb[infer] @ git+https://github.com/DataHerb/dataherb-python"
 dataherb create . --id orders-daily --name "Daily orders" --format yaml --no-input
 ```
 

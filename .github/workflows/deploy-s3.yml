@@ -27,23 +27,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
       - id: mode
-        run: echo "mode=$(python -c "from dataherb.catalog.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
+        run: echo "mode=$(uv run python -c "from dataherb.catalog.config import load_config; print(load_config().explorer['duckdb'].get('mode', 'cdn'))")" >> "$GITHUB_OUTPUT"
       - if: steps.mode.outputs.mode == 'vendored'
         uses: actions/setup-node@v4
         with:
           node-version: "22"
       - if: steps.mode.outputs.mode == 'vendored'
         run: npm ci && npm run vendor
-      - run: dataherb catalog build
+      - run: uv run dataherb catalog build
         env:
           GITHUB_TOKEN: ${{ secrets.CATALOG_GITHUB_TOKEN || github.token }}
       - name: Upload

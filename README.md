@@ -23,9 +23,9 @@ is served straight from S3, git or the site itself. This is v2 of
 
 ```bash
 git clone https://github.com/DataHerb/dataherb-explorer && cd dataherb-explorer
-pip install -r requirements.txt   # the dataherb CLI
-dataherb catalog build        # reads dataherb.config.yml + catalog/, writes dist/
-dataherb catalog serve        # http://127.0.0.1:8000
+uv sync                       # installs the dataherb CLI (pyproject.toml)
+uv run dataherb catalog build # reads dataherb.config.yml + catalog/, writes dist/
+uv run dataherb catalog serve # http://127.0.0.1:8000
 ```
 
 The demo catalog mixes datasets in this repo (`demo/`), datasets in other
@@ -80,7 +80,8 @@ The builder is the `dataherb` CLI from [dataherb-python](https://github.com/Data
 ## Development
 
 ```bash
-pip install -r requirements.txt
+uv sync
+uv lock --upgrade-package dataherb   # pick up a newer dataherb (the lock pins a commit)
 npm ci && npm run vendor     # optional: self-host DuckDB-WASM in site/vendor
 ```
 

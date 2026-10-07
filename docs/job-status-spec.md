@@ -141,7 +141,7 @@ and `site/assets/lib/health.js`.
 **Python / any orchestrator with Python**
 
 ```bash
-pip install "dataherb[s3]"
+uv tool install "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python"
 dataherb status emit --target s3://bucket/_dataherb/status/ \
   --job-id sales-export --status running --expected-interval P1D --max-duration PT2H
 # ... do the work ...

@@ -1,3 +1,0 @@
-# The dataherb CLI builds this site (`dataherb catalog build`).
-# Installs from master until a release with `dataherb catalog` is on PyPI.
-dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@master

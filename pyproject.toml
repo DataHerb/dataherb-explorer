@@ -1,0 +1,15 @@
+# Python tooling for building this site. Not a package: `uv sync` installs the
+# dataherb CLI, then `uv run dataherb catalog build` builds the site.
+[project]
+name = "dataherb-explorer"
+version = "2.0.0"
+description = "Static data catalog and explorer built with the dataherb CLI."
+requires-python = ">=3.9"
+dependencies = ["dataherb[s3]"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+# Until a release with `dataherb catalog` is on PyPI.
+dataherb = { git = "https://github.com/DataHerb/dataherb-python", branch = "master" }

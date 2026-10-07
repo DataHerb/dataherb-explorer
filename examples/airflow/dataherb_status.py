@@ -18,8 +18,9 @@ callbacks to any DAG:
     ) as dag:
         ...
 
-Requires `pip install "dataherb[s3]"` on the workers. The worker's
-AWS credentials (instance role, connection env vars) are used to write.
+Requires `dataherb[s3]` in the workers' environment, e.g.
+`uv pip install "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python"`.
+The worker's AWS credentials (instance role, connection env vars) are used to write.
 Status writes never fail the DAG: errors are logged and swallowed.
 """
 

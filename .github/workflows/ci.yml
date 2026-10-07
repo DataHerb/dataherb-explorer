@@ -10,18 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
       - name: Validate config and catalog entries
-        run: dataherb catalog validate
+        run: uv run dataherb catalog validate
       - name: Catalog quality report
-        run: dataherb catalog lint
+        run: uv run dataherb catalog lint
       - name: Syntax-check the site's JavaScript
         run: for f in $(find site/assets -name '*.js'); do node --check "$f"; done
       - name: Build the site
-        run: dataherb catalog build
+        run: uv run dataherb catalog build
       - uses: actions/upload-artifact@v4
         with:
           name: site-preview

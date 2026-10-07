@@ -36,13 +36,12 @@ inputs:
     description: Token allowed to create repository_dispatch events on dispatch-repository.
     required: false
   dataherb-version:
-    description: pip requirement for the dataherb CLI.
+    description: Requirement uvx runs the dataherb CLI from.
     default: "dataherb[s3] @ git+https://github.com/DataHerb/dataherb-python@master"
 runs:
   using: composite
   steps:
-    - shell: bash
-      run: python3 -m pip install --quiet "${{ inputs.dataherb-version }}"
+    - uses: astral-sh/setup-uv@v6
     - shell: bash
       env:
         IN_STATUS: ${{ inputs.status }}
@@ -73,7 +72,7 @@ runs:
         [ -n "$IN_MESSAGE" ] && args+=(--message "$IN_MESSAGE")
         for d in $IN_DATASETS; do args+=(--dataset "$d"); done
         for m in $IN_METRICS; do args+=(--metric "$m"); done
-        dataherb "${args[@]}"
+        uvx --from "${{ inputs.dataherb-version }}" dataherb "${args[@]}"
     - if: inputs.dispatch-repository != '' && (inputs.status == 'success' || inputs.status == 'partial')
       shell: bash
       env:
