@@ -1,3 +1,5 @@
+---
 id: demo-daily-sales
 store: local
 prefix: datasets/sales
+---

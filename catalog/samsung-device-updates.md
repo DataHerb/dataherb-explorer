@@ -1,5 +1,7 @@
+---
 id: samsung-device-updates
 repo: DataHerb/dataset-samsung-device-updates
 name: Samsung device update cycles
 tags: [devices]
 status_job: samsung-updates-crawler
+---

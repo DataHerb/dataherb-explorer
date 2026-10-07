@@ -137,47 +137,94 @@ export function link(path, query) {
   return `#/${path.map(encodeURIComponent).join('/')}${q ? `?${q}` : ''}`;
 }
 
-/** Very small, safe Markdown subset: headings, lists, code, links, bold, italics, paragraphs. */
+/**
+ * Small, safe Markdown renderer for catalog entry bodies and dataset docs.
+ * Everything is escaped first. Supports headings, paragraphs, bullet and
+ * numbered lists, tables, block quotes, fenced code, rules, and inline code,
+ * bold, italics, links (http(s), mailto, relative) and images (http(s)).
+ */
 export function markdown(src) {
   if (!src) return '';
-  const inline = (s) =>
-    esc(s)
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
+  const url = (u) => (/^(https?:|mailto:|#|\.{0,2}\/|[\w.-]+(\/|$))/i.test(u) && !/^javascript:/i.test(u) ? u : '#');
+  const inline = (s) => {
+    const codes = [];
+    let t = esc(s).replace(/`([^`]+)`/g, (_, c) => `\u0000${codes.push(c) - 1}\u0000`);
+    t = t
+      .replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">')
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, href) => `<a href="${url(href)}" target="_blank" rel="noopener">${label}</a>`)
+      .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-      .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      .replace(/(^|[^*\w])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
+      .replace(/(^|[^\w])_([^_\s][^_]*)_(?!\w)/g, '$1<em>$2</em>');
+    return t.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${codes[+i]}</code>`);
+  };
+  const cells = (row) => row.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+  const lines = String(src).replace(/\r\n?/g, '\n').split('\n');
   const out = [];
-  let list = null;
-  let code = null;
-  for (const line of String(src).split('\n')) {
-    if (code) {
-      if (line.startsWith('```')) {
-        out.push(`<pre><code>${esc(code.join('\n'))}</code></pre>`);
-        code = null;
-      } else code.push(line);
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^```/.test(line)) {
+      const code = [];
+      for (i++; i < lines.length && !/^```/.test(lines[i]); i++) code.push(lines[i]);
+      out.push(`<pre><code>${esc(code.join('\n'))}</code></pre>`);
+      i++;
       continue;
     }
-    if (line.startsWith('```')) {
-      code = [];
+    if (!line.trim()) {
+      i++;
       continue;
     }
-    const li = /^\s*[-*]\s+(.*)$/.exec(line);
+    const hd = /^(#{1,6})\s+(.*?)\s*#*$/.exec(line);
+    if (hd) {
+      const n = Math.min(hd[1].length + 2, 6);
+      out.push(`<h${n}>${inline(hd[2])}</h${n}>`);
+      i++;
+      continue;
+    }
+    if (/^\s*([-*_])(\s*\1){2,}\s*$/.test(line)) {
+      out.push('<hr>');
+      i++;
+      continue;
+    }
+    if (/^\s*\|.*\|\s*$/.test(line) && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1] || '')) {
+      const align = cells(lines[i + 1]).map((c) => (/^:-+:$/.test(c) ? 'center' : /-:$/.test(c) ? 'right' : ''));
+      const td = (tag, c, j) => `<${tag}${align[j] ? ` style="text-align:${align[j]}"` : ''}>${inline(c)}</${tag}>`;
+      const head = cells(line).map((c, j) => td('th', c, j)).join('');
+      const body = [];
+      for (i += 2; i < lines.length && /^\s*\|/.test(lines[i]); i++) body.push(`<tr>${cells(lines[i]).map((c, j) => td('td', c, j)).join('')}</tr>`);
+      out.push(`<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body.join('')}</tbody></table></div>`);
+      continue;
+    }
+    if (/^\s*>/.test(line)) {
+      const quote = [];
+      for (; i < lines.length && /^\s*>/.test(lines[i]); i++) quote.push(lines[i].replace(/^\s*>\s?/, ''));
+      out.push(`<blockquote>${markdown(quote.join('\n'))}</blockquote>`);
+      continue;
+    }
+    const item = /^\s*([-*+]|\d+[.)])\s+(.*)$/;
+    const li = item.exec(line);
     if (li) {
-      if (!list) {
-        list = [];
-        out.push(list);
+      const ordered = /\d/.test(li[1]);
+      const items = [];
+      while (i < lines.length) {
+        const m = item.exec(lines[i]);
+        if (m && /\d/.test(m[1]) === ordered) items.push(m[2]);
+        else if (items.length && /^\s{2,}\S/.test(lines[i])) items[items.length - 1] += ` ${lines[i].trim()}`;
+        else break;
+        i++;
       }
-      list.push(`<li>${inline(li[1])}</li>`);
+      const tag = ordered ? 'ol' : 'ul';
+      const start = ordered && parseInt(li[1], 10) !== 1 ? ` start="${parseInt(li[1], 10)}"` : '';
+      out.push(`<${tag}${start}>${items.map((t) => `<li>${inline(t)}</li>`).join('')}</${tag}>`);
       continue;
     }
-    list = null;
-    const hd = /^(#{1,4})\s+(.*)$/.exec(line);
-    if (hd) out.push(`<h${hd[1].length + 2}>${inline(hd[2])}</h${hd[1].length + 2}>`);
-    else if (line.trim()) out.push(`<p>${inline(line)}</p>`);
-    else out.push('');
+    const para = [];
+    for (; i < lines.length && lines[i].trim() && !/^(#{1,6}\s|```|\s*>|\s*([-*+]|\d+[.)])\s|\s*\|.*\|\s*$|\s*([-*_])(\s*\3){2,}\s*$)/.test(lines[i]); i++) para.push(lines[i].trim());
+    if (!para.length) para.push(lines[i++].trim());
+    out.push(`<p>${inline(para.join(' '))}</p>`);
   }
-  if (code) out.push(`<pre><code>${esc(code.join('\n'))}</code></pre>`);
-  return out.map((x) => (Array.isArray(x) ? `<ul>${x.join('')}</ul>` : x)).join('\n').replace(/<\/p>\n<p>/g, ' ');
+  return out.join('\n');
 }
 
 export function sqlIdent(name) {

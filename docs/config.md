@@ -80,7 +80,7 @@ See [s3.md](s3.md) for bucket permissions and CORS.
 
 ```yaml
 catalog:
-  dirs: [catalog]          # folders of catalog entries (*.yml, *.yaml, *.json; files starting with _ are skipped)
+  dirs: [catalog]          # folders of catalog entries (*.md with YAML front matter, *.yml, *.yaml, *.json; files starting with _ are skipped)
   discover:                # find datasets without catalog entries
     - store: datalake
       prefix: datasets/    # every <prefix>/**/dataherb.{json,yml,yaml}

@@ -66,13 +66,36 @@ and row groups a query needs, while CSV and JSON files are downloaded whole.
 
 ## 3. List it in the catalog
 
-Add one file to `catalog/` and open a pull request:
+Add one Markdown file to `catalog/` and open a pull request. The fields go in
+the YAML front matter; the body is free Markdown shown on the dataset page,
+above the dataset's own documentation (caveats, how to join it, who uses it).
+`catalog/orders-daily.md`:
 
-```yaml
-# catalog/orders-daily.yml
+```markdown
+---
 id: orders-daily
 store: datalake            # git: use `repo: my-org/orders-daily` (+ optional `ref`)
 prefix: datasets/orders-daily/
+---
+
+## Caveats
+
+Refunds show up one day after the order.
+```
+
+The body supports headings, lists, tables, links, images, quotes and code
+blocks. Plain `catalog/<id>.yml` (or `.json`) entries without a body still
+work, and `.md` files without front matter (a README, say) are ignored.
+
+For git repositories, `dataherb catalog add` writes these files for you
+(`--force` refreshes the front matter and keeps the body). A
+repo with metadata gets a pointer entry; one without gets an inline entry
+inferred from its data files:
+
+```bash
+dataherb catalog add my-org/orders-daily
+# every repo of an org whose name starts with "dataset" (ids drop the prefix)
+dataherb catalog add --org my-org --match dataset
 ```
 
 Anything else you put in the entry overrides the dataset's own metadata, which
