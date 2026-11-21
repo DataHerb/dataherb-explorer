@@ -46,7 +46,7 @@ DataHerb git repos, and simulated job status files.
 6. If your data is in S3, set up browser access and CORS: [docs/s3.md](docs/s3.md).
    If browsers can't reach public CDNs, set `explorer.duckdb.mode: vendored`.
 
-The site rebuilds on every push to `main`, every hour, and whenever a pipeline
+The site rebuilds on every push to `main`, once a day, and whenever a pipeline
 sends a `dataset-updated` event. To host on S3/CloudFront instead of Pages,
 set `DEPLOY_TARGET=s3` (see [deploy-s3.yml](.github/workflows/deploy-s3.yml)).
 

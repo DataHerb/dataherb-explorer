@@ -12,7 +12,9 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "17 * * * *"
+    # Daily: status is read live in the browser, so the schedule only refreshes
+    # metadata from other repos. Pipelines can send `dataset-updated` for sooner.
+    - cron: "17 6 * * *"
   repository_dispatch:
     types: [dataset-updated]
   workflow_dispatch:
