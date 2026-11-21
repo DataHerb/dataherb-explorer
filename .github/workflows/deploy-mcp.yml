@@ -1,0 +1,33 @@
+# Deploys the read-only DataHerb MCP (mcp/) to Cloudflare Workers.
+#
+# Off by default: it runs only when the repository variable MCP_ENABLED is "true" and the
+# secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are set. See mcp/README.md.
+name: Deploy MCP
+
+on:
+  push:
+    branches: [main]
+    paths: ["mcp/**", ".github/workflows/deploy-mcp.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mcp
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: vars.MCP_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: node mcp/test.mjs
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: mcp
+          command: deploy

@@ -1,0 +1,11 @@
+# DataHerb MCP: deployed by .github/workflows/deploy-mcp.yml once the repository variable
+# MCP_ENABLED is "true", or by hand with: npx wrangler deploy  (from this folder)
+name = "dataherb-mcp"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+# The explorer site this server reads (its data/catalog.json and data/status.json).
+# A fork points this at its own site.
+SITE_URL = "https://dataherb.github.io/dataherb-explorer/"
