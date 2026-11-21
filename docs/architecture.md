@@ -1,7 +1,7 @@
 # How it works
 
 ```
-                 build time (CI, hourly + on change)                     read time (browser)
+                 build time (CI, daily + on change)                      read time (browser)
  ┌──────────────────────────┐
  │ dataherb.config.yml      │
  │ catalog/*.md             │──┐

@@ -67,6 +67,14 @@ status:
   sources:
     - store: local
       prefix: status/
+    # gleanyard projects write their job status into their own repo (git stores cannot
+    # list folders, so the job ids are given).
+    - store: github
+      prefix: "spikinglabs/city-anomalies@:_dataherb/status"
+      jobs: [city-anomalies]
+    - store: github
+      prefix: "kausalflow/berlin-family-events@:_dataherb/status"
+      jobs: [berlin-family-events]
   #  - store: datalake
   #    prefix: _dataherb/status/
   # Fetch latest.json files from the browser on page load, so status is live

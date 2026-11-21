@@ -106,7 +106,7 @@ With `catalog.discover` configured for a prefix, step 3 is unnecessary: every
 `dataherb.{json,yml}` under it is picked up on the next build.
 
 CI runs `dataherb catalog validate` and `dataherb catalog lint` on the pull request. After merge the
-site rebuilds. Datasets in other repos or buckets are re-read on the hourly
+site rebuilds. Datasets in other repos or buckets are re-read on the daily
 scheduled build, or immediately when their pipeline sends a
 `dataset-updated` event (see the emit-status action).
 
