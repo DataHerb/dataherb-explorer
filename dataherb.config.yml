@@ -31,6 +31,17 @@ stores:
     # Name of the env var holding a token for private repos (build time only).
     token_env: GITHUB_TOKEN
 
+  # Public web folders where L's pipelines publish job status (dataherb.status/v1).
+  allo-cars:
+    type: http
+    base_url: https://cars.allo.land/data/
+  allo-places:
+    type: http
+    base_url: https://places.allo.land/
+  allo-recalls:
+    type: http
+    base_url: https://recalls-api.allo.land/
+
   # Files that live in this repository (copied into the site on build).
   local:
     type: local
@@ -75,6 +86,34 @@ status:
     - store: github
       prefix: "kausalflow/berlin-family-events@:_dataherb/status"
       jobs: [berlin-family-events]
+    # Allo Cars collectors: /data/<project>/status/<job>/latest.json (http stores cannot list).
+    - store: allo-cars
+      prefix: chargers/status
+      jobs: [de-public-chargers]
+    - store: allo-cars
+      prefix: charging-prices/status
+      jobs: [ev-charging-prices]
+    - store: allo-cars
+      prefix: electricity-prices/status
+      jobs: [de-day-ahead-electricity-prices]
+    - store: allo-cars
+      prefix: fuel-prices/status
+      jobs: [eu-fuel-prices]
+    - store: allo-cars
+      prefix: recalls/status
+      jobs: [eu-vehicle-recalls]
+    - store: allo-cars
+      prefix: registrations/status
+      jobs: [de-new-car-registrations]
+    - store: allo-cars
+      prefix: vehicle-catalog/status
+      jobs: [car-official-consumption]
+    - store: allo-places
+      prefix: _dataherb/status
+      jobs: [osm-places, osm-toilets, osm-parking]
+    - store: allo-recalls
+      prefix: _dataherb/status
+      jobs: [baby-product-recalls]
   #  - store: datalake
   #    prefix: _dataherb/status/
   # Fetch latest.json files from the browser on page load, so status is live
