@@ -50,6 +50,12 @@ The site rebuilds on every push to `main`, once a day, and whenever a pipeline
 sends a `dataset-updated` event. To host on S3/CloudFront instead of Pages,
 set `DEPLOY_TARGET=s3` (see [deploy-s3.yml](.github/workflows/deploy-s3.yml)).
 
+## MCP server for AI assistants
+
+`mcp/` holds a read-only MCP server (a Cloudflare Worker) that lets AI assistants search the
+catalog, read schemas and freshness, preview rows, open the explorer with SQL filled in, and
+list failing jobs. It is off by default; see [mcp/README.md](mcp/README.md) to turn it on.
+
 ## Repository layout
 
 ```
@@ -60,6 +66,7 @@ site/                   the static site (vanilla JS, no build step)
 .github/workflows/      CI, Pages and S3 deploys
 .github/actions/emit-status/   GitHub Action that writes status files
 examples/               status emitters for Airflow, Actions, shell
+mcp/                    read-only MCP server for AI assistants (off by default)
 docs/                   config, adding datasets, status spec, S3, architecture
 ```
 

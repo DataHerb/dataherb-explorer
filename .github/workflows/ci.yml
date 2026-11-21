@@ -18,6 +18,8 @@ jobs:
         run: uv run dataherb catalog lint
       - name: Syntax-check the site's JavaScript
         run: for f in $(find site/assets -name '*.js'); do node --check "$f"; done
+      - name: Test the MCP server offline
+        run: node mcp/test.mjs
       - name: Build the site
         run: uv run dataherb catalog build
       - uses: actions/upload-artifact@v4
