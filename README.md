@@ -55,6 +55,7 @@ set `DEPLOY_TARGET=s3` (see [deploy-s3.yml](.github/workflows/deploy-s3.yml)).
 `mcp/` holds a read-only MCP server (a Cloudflare Worker) that lets AI assistants search the
 catalog, read schemas and freshness, preview rows, open the explorer with SQL filled in, and
 list failing jobs. It is off by default; see [mcp/README.md](mcp/README.md) to turn it on.
+This catalog's server is at `https://dataherb.kausalflow.com/mcp`.
 
 ## Repository layout
 
