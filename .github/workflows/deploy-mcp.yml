@@ -2,6 +2,12 @@
 #
 # Off by default: it runs only when the repository variable MCP_ENABLED is "true" and the
 # secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are set. See mcp/README.md.
+#
+# Optional repository variables:
+#   MCP_ROUTE  serve the MCP on your own domain, e.g. "data.example.org/mcp*" (the zone must be
+#              in the same Cloudflare account; the token then also needs Zone: Workers Routes
+#              Edit and Zone: Read). The workers.dev address keeps working.
+#   SITE_URL   the explorer's public URL when it is not the one in mcp/wrangler.toml.
 name: Deploy MCP
 
 on:
@@ -30,4 +36,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: mcp
-          command: deploy
+          command: >-
+            deploy
+            ${{ vars.MCP_ROUTE && format('--routes "{0}"', vars.MCP_ROUTE) || '' }}
+            ${{ vars.SITE_URL && format('--var "SITE_URL:{0}"', vars.SITE_URL) || '' }}

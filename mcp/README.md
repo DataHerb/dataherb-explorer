@@ -24,6 +24,12 @@ build would not publish, so an internal catalog stays internal only as long as i
    `CLOUDFLARE_ACCOUNT_ID`.
 3. Set the repository variable `MCP_ENABLED` to `true`. The `Deploy MCP` workflow then deploys
    on changes to `mcp/` and by hand; without the variable it does nothing.
+4. Optional, your own address: serve the site on a custom domain and set the repository
+   variable `MCP_ROUTE` to `<that host>/mcp*`. The Worker then answers at `https://<host>/mcp`
+   next to the site, while every other path stays with the site. The domain's zone must be in
+   the same Cloudflare account as the Worker, its DNS record must be proxied (orange cloud),
+   and the token needs Zone: Workers Routes Edit and Zone: Read as well. `SITE_URL` (a
+   repository variable) overrides the one in `wrangler.toml` without editing it.
 
 The free Workers plan is enough: each call reads two cached JSON files, and previews read at
 most 256 KB of one file.
